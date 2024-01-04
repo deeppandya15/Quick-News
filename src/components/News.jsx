@@ -2,87 +2,34 @@
 /* eslint-disable no-unused-vars */
 // import React from 'react'
 import NewsItem from './newsItem'
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 function News() {
 
-    let article = [
-        {
-            "source": {
-                "id": "bbc-sport",
-                "name": "BBC Sport"
-            },
-            "author": null,
-            "title": "The smiling South African quick defying calls for more menace",
-            "description": "Nandre Burger laughs off criticism from Kevin Pietersen that he is too smiley on the cricket pitch.",
-            "url": "http://www.bbc.co.uk/sport/cricket/67866212",
-            "urlToImage": "https://ichef.bbci.co.uk/live-experience/cps/624/cpsprodpb/134FA/production/_132189097_burger.jpg",
-            "publishedAt": "2024-01-02T16:07:20.683744Z",
-            "content": "Nandre Burger took seven wickets on his debut Test and such was his performance, Virat Kohli spent a large part of India's nets this week practising against left-arm quick bowling\r\nNandre Burger tick… [+5254 chars]"
-        },
-        {
-            "source": {
-                "id": "al-jazeera-english",
-                "name": "Al Jazeera English"
-            },
-            "author": "Faisal Mahmud",
-            "title": "Bangladesh cricket star Shakib Al Hasan’s election run divides hometown",
-            "description": "The country’s biggest sporting icon is fighting for the ruling party in the January 7 vote, boycotted by the opposition.",
-            "url": "https://www.aljazeera.com/sports/2024/1/2/bangladesh-cricket-star-shakib-al-hasans-election-run-divides-hometown",
-            "urlToImage": "https://www.aljazeera.com/wp-content/uploads/2024/01/DSC_0779-1704194543.jpeg?resize=1920%2C1440",
-            "publishedAt": "2024-01-02T12:17:29Z",
-            "content": "Dhaka, Bangladesh In Magura, a sleepy town in southwest Bangladesh, about 168km (104 miles) from capital Dhaka, more than a thousand people are gathered outside a circular-shaped auditorium.\r\nThe cri… [+7534 chars]"
-        },
-        {
-            "source": {
-                "id": "news-com-au",
-                "name": "News.com.au"
-            },
-            "author": "Matthew Sullivan",
-            "title": "Clarke’s radical plan to save Test cricket",
-            "description": "Michael Clarke says “it’s sad to see” South Africa’s shock squad announcement for the tour of New Zealand signal the likely demise of Test cricket.",
-            "url": "https://www.news.com.au/sport/cricket/sad-to-see-michael-clarkes-radical-plan-to-save-test-cricket-amid-flabbergasting-move/news-story/c85da16426ae5de992117aa28474b752",
-            "urlToImage": "https://content.api.news/v3/images/bin/5d52f459da671dadc5ee6a3783873c16",
-            "publishedAt": "2024-01-02T11:21:00Z",
-            "content": "Michael Clarke says “it’s sad to see” South Africa’s shock squad announcement for the tour of New Zealand signal the likely demise of Test cricket.\r\nThe cricket world reacted with sadness and anger w… [+3319 chars]"
-        },
-        {
-            "source": {
-                "id": "espn-cric-info",
-                "name": "ESPN Cric Info"
-            },
-            "author": null,
-            "title": "PCB hands Umar Akmal three-year ban from all cricket | ESPNcricinfo.com",
-            "description": "Penalty after the batsman pleaded guilty to not reporting corrupt approaches | ESPNcricinfo.com",
-            "url": "http://www.espncricinfo.com/story/_/id/29103103/pcb-hands-umar-akmal-three-year-ban-all-cricket",
-            "urlToImage": "https://a4.espncdn.com/combiner/i?img=%2Fi%2Fcricket%2Fcricinfo%2F1099495_800x450.jpg",
-            "publishedAt": "2020-04-27T11:41:47Z",
-            "content": "Umar Akmal's troubled cricket career has hit its biggest roadblock yet, with the PCB handing him a ban from all representative cricket for three years after he pleaded guilty of failing to report det… [+1506 chars]"
-        },
-        {
-            "source": {
-                "id": "espn-cric-info",
-                "name": "ESPN Cric Info"
-            },
-            "author": null,
-            "title": "What we learned from watching the 1992 World Cup final in full again | ESPNcricinfo.com",
-            "description": "Wides, lbw calls, swing - plenty of things were different in white-ball cricket back then | ESPNcricinfo.com",
-            "url": "http://www.espncricinfo.com/story/_/id/28970907/learned-watching-1992-world-cup-final-full-again",
-            "urlToImage": "https://a4.espncdn.com/combiner/i?img=%2Fi%2Fcricket%2Fcricinfo%2F1219926_1296x729.jpg",
-            "publishedAt": "2020-03-30T15:26:05Z",
-            "content": "Last week, we at ESPNcricinfo did something we have been thinking of doing for eight years now: pretend-live ball-by-ball commentary for a classic cricket match. We knew the result, yes, but we tried… [+6823 chars]"
-        }
-    ]
 
-    const [articles, setArticles] = useState(article)
+    const fetchData = async () => {
+
+        let url = "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=22b58b9cf7ac4cb3b31d126b95cbfd44";
+        let response = await fetch(url);
+        let data = await response.json();
+
+        // Update state with fetched data
+        setArticles(data.articles);
+    }
+
+    const [articles, setArticles] = useState([])
+    useEffect(() => {
+        // Call the fetchData function when the component renders
+        fetchData();
+    }, []);
     return (
         <>
             <div className='container my-3'>
                 <h2>QuickNews-Top Headlines</h2>
                 <div className="row">
-                    {article.map((elem) => {
+                    {articles.map((elem) => {
                         return <div className="col-md-4" key={elem.url}>
-                            <NewsItem title={elem.title.slice(0, 45)} description={elem.description.slice(0, 90)} imgUrl={elem.urlToImage} newsUrl={elem.url} />
+                            <NewsItem title={elem.title ? elem.title.slice(0, 45) : ""} description={elem.description ? elem.description.slice(0, 90) : ""} imgUrl={elem.urlToImage ? elem.urlToImage : "https://img.etimg.com/thumb/msid-106520531,width-1070,height-580,overlay-etmarkets/photo.jpg"} newsUrl={elem.url} />
                         </div>
                     })}
 
