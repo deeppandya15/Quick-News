@@ -1,33 +1,47 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-key */
 /* eslint-disable no-unused-vars */
 // import React from 'react'
+import Spinner from './Spinner';
 import NewsItem from './newsItem'
 import { useState, useEffect } from "react"
 
-function News() {
+function News(props) {
 
+    const [articles, setArticles] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalRecord, setTotalRecord] = useState()
+    const [loading, setloading] = useState(false)
 
     const fetchData = async () => {
-
-        let url = "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=22b58b9cf7ac4cb3b31d126b95cbfd44";
+        let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=22b58b9cf7ac4cb3b31d126b95cbfd44&page=${page}&pageSize=${props.pagesize}`;
+        setloading(true);
         let response = await fetch(url);
-        let data = await response.json();
+        let parseData = await response.json();
+        setloading(false);
 
         // Update state with fetched data
-        setArticles(data.articles);
+        setArticles(parseData.articles); //data.articles means in receive data articles is obj. in which all info are stored
+        setTotalRecord(parseData.totalResults)
     }
-
-    const [articles, setArticles] = useState([])
     useEffect(() => {
         // Call the fetchData function when the component renders
         fetchData();
-    }, []);
+    }, [page]);
+
+    const handlePrevious = () => {
+        setPage(page - 1)
+    }
+    const handleNext = () => {
+        setPage(page + 1)
+    }
     return (
         <>
             <div className='container my-3'>
-                <h2>QuickNews-Top Headlines</h2>
+                <h2 className='text-center'>QuickNews-Top Headlines</h2>
+                {loading && <Spinner />}
                 <div className="row">
-                    {articles.map((elem) => {
+                    {!loading && articles.map((elem) => {
                         return <div className="col-md-4" key={elem.url}>
                             <NewsItem title={elem.title ? elem.title.slice(0, 45) : ""} description={elem.description ? elem.description.slice(0, 90) : ""} imgUrl={elem.urlToImage ? elem.urlToImage : "https://img.etimg.com/thumb/msid-106520531,width-1070,height-580,overlay-etmarkets/photo.jpg"} newsUrl={elem.url} />
                         </div>
@@ -35,6 +49,10 @@ function News() {
 
                 </div>
 
+                <div className='container d-flex justify-content-between'>
+                    <button disabled={page <= 1} type="button" className="btn btn-dark" onClick={handlePrevious}>&larr; Previous</button>
+                    <button disabled={articles.length === 0} type="button" className="btn btn-dark" onClick={handleNext}>	Next &rarr;</button>
+                </div>
             </div>
         </>
     )
