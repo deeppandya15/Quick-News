@@ -1,9 +1,11 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-key */
 /* eslint-disable no-unused-vars */
 // import React from 'react'
 import Spinner from './Spinner';
-import NewsItem from './newsItem'
+import NewsItem from './newsItem';
+import PropTypes from 'prop-types';
 import { useState, useEffect } from "react"
 
 function News(props) {
@@ -14,11 +16,15 @@ function News(props) {
     const [loading, setloading] = useState(false)
 
     const fetchData = async () => {
-        let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=22b58b9cf7ac4cb3b31d126b95cbfd44&page=${page}&pageSize=${props.pagesize}`;
+        props.loadingBar(5);
+        let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.newsApi}&page=${page}&pageSize=${props.pagesize}`;
+        console.log(url);
         setloading(true);
+        props.loadingBar(40);
         let response = await fetch(url);
         let parseData = await response.json();
         setloading(false);
+        props.loadingBar(100);
 
         // Update state with fetched data
         setArticles(parseData.articles); //data.articles means in receive data articles is obj. in which all info are stored
@@ -43,7 +49,7 @@ function News(props) {
                 <div className="row">
                     {!loading && articles.map((elem) => {
                         return <div className="col-md-4" key={elem.url}>
-                            <NewsItem title={elem.title ? elem.title.slice(0, 45) : ""} description={elem.description ? elem.description.slice(0, 90) : ""} imgUrl={elem.urlToImage ? elem.urlToImage : "https://img.etimg.com/thumb/msid-106520531,width-1070,height-580,overlay-etmarkets/photo.jpg"} newsUrl={elem.url} />
+                            <NewsItem title={elem.title ? elem.title.slice(0, 45) : ""} description={elem.description ? elem.description.slice(0, 90) : ""} imgUrl={elem.urlToImage ? elem.urlToImage : "https://img.etimg.com/thumb/msid-106520531,width-1070,height-580,overlay-etmarkets/photo.jpg"} newsUrl={elem.url} date={elem.publishedAt} author={elem.author} newsSource={elem.source.name} />
                         </div>
                     })}
 
@@ -56,6 +62,18 @@ function News(props) {
             </div>
         </>
     )
+}
+
+News.defaultProps = {
+    country: "in",
+    category: "general",
+    pagesize: "8"
+}
+
+News.propTypes = {
+    country: PropTypes.string,
+    category: PropTypes.string,
+    pagesize: PropTypes.number
 }
 
 export default News
