@@ -6,7 +6,8 @@
 import Spinner from './Spinner';
 import NewsItem from './newsItem';
 import PropTypes from 'prop-types';
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
+
 
 function News(props) {
 
@@ -15,22 +16,28 @@ function News(props) {
     const [totalRecord, setTotalRecord] = useState()
     const [loading, setloading] = useState(false)
 
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     const fetchData = async () => {
-        props.loadingBar(5);
+        props.loadingBar(10);
         let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.newsApi}&page=${page}&pageSize=${props.pagesize}`;
         console.log(url);
         setloading(true);
-        props.loadingBar(40);
+        props.loadingBar(30);
         let response = await fetch(url);
         let parseData = await response.json();
+        props.loadingBar(70);
         setloading(false);
-        props.loadingBar(100);
 
         // Update state with fetched data
         setArticles(parseData.articles); //data.articles means in receive data articles is obj. in which all info are stored
         setTotalRecord(parseData.totalResults)
+        props.loadingBar(100);
     }
     useEffect(() => {
+        document.title = `${capitalizeFirstLetter(props.category)} - NewsMonkey`;
         // Call the fetchData function when the component renders
         fetchData();
     }, [page]);
