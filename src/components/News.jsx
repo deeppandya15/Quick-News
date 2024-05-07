@@ -4,7 +4,7 @@
 /* eslint-disable no-unused-vars */
 // import React from 'react'
 import Spinner from './Spinner';
-import NewsItem from './newsItem';
+import NewsItem from './NewsItem';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from "react";
 
